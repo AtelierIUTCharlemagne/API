@@ -30,6 +30,7 @@ services:
     env_file: ./api/.env
     volumes:
       - ./db:/var/lib/mysql
+      - ./mysql/script_db_reunionou.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
       - docker_nodejs_bootstrap
 
