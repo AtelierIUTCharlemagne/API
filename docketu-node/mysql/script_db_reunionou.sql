@@ -117,3 +117,15 @@ CREATE TABLE IF NOT EXISTS `db_reunionou`.`admin` (
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- INSERT events
+-- -----------------------------------------------------
+
+INSERT INTO events (title,address,localisation,token,date_events,last_update,user_id_user)
+VALUES
+  ("rdv_jean anniversaire_Papy","452-4263 Est, Rd.","32.5969645568, -111.7979297792","UIE14MEN6WH","2021-11-12 00:00:00","2021-10-07 00:00:00",1),
+  ("anniversaire_mami anniversaire_Laure","261-866 Nisl Rd.","-67.7927790592, -82.838011904","FWG76WMO2EK","2022-11-27 00:00:00","2022-02-13 00:00:00",2),
+  ("rdv_jean anniversaire_Papy","Ap #788-4284 Gravida St.","42.9407051776, 147.9463177216","WUW82PHK5SW","2021-10-07 00:00:00","2021-07-21 00:00:00",1),
+  ("anniversaire_mami anniversaire_Laure","614-8982 Massa Av.","83.1886403584, -7.3505230848","LJS66OMP5MM","2022-11-13 00:00:00","2021-06-25 00:00:00",3),
+  ("rdv_arthure rdv_jean","707-8926 Eu, Street","69.261202944, -77.6789656576","XXO18TJE1QP","2022-10-01 00:00:00","2022-04-14 00:00:00",2);
