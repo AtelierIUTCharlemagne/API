@@ -1,0 +1,44 @@
+version: "3"
+
+networks:
+  docker_nodejs_bootstrap:
+    driver: bridge
+
+services:
+  api:
+    container_name: docker_nodejs_bootstrap_api
+    image: node
+    ports:
+      - "19100:3000"
+    volumes:
+      - ./api:/app
+    working_dir: /app
+    env_file:
+      - ./api/.env
+    command: bash -c 'npm i && npm run dev' #for npm modules installation inside container without hot reloading in dev environment
+    #command: bash -c 'npm i && npm run dev' #for npm modules installation inside container and hot reloading in dev environment (works only if nodemon is already installed in container)
+    #command: npm start #for production environment
+    #restart: unless-stopped #to activate in production environment
+    depends_on:
+      - iut_db_atelier
+    networks:
+      - docker_nodejs_bootstrap
+
+  iut_db_atelier:
+    container_name: iut_db_atelier
+    image: mariadb:latest
+    env_file: ./api/.env
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - docker_nodejs_bootstrap
+
+  atelier_adminer:
+    container_name: atelier_adminer
+    image: adminer
+    ports:
+      - 8080:8080
+    depends_on:
+      - iut_db_atelier
+    networks:
+      - docker_nodejs_bootstrap
