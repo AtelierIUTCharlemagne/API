@@ -4,7 +4,7 @@ const monAxios = require('../axios/axios')
 
 const methodNotAllowed = require('../errors/methodNotAllowed.js');
 
-const url = "http://service_auth:3001"
+const url = "http://service_auth:3000"
 const axios = monAxios(url)
 
 //req.path 
@@ -15,11 +15,7 @@ router.route('/')
     .put(methodNotAllowed)
     .post(methodNotAllowed)
     .get(function (req, res, next) {
-        console.log(axios)
-        console.log('/'+req.path)
-        axios.get('/users' + req.path).then(resp => {
-            
-            
+        axios.get('/users' + req.path).then(resp => {    
         res.json(resp.data)
     })
 })
@@ -49,7 +45,7 @@ router.route('/signin')
     })
     .get(methodNotAllowed)
 
-router.route('/:id')
+/*router.route('/:id')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
     .post(methodNotAllowed)
@@ -60,5 +56,5 @@ router.route('/:id')
             return res
         })
     })
-
+*/
 module.exports = router;
