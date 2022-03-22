@@ -1,20 +1,20 @@
 version: "3"
 
 networks:
-  docker_nodejs_bootstrap:
+  network_atelier:
     driver: bridge
 
 services:
-  api:
-    container_name: docker_nodejs_bootstrap_api
+  service_auth:
+    container_name: service_auth
     image: node
     ports:
       - "62349:3000"
     volumes:
-      - ./api:/app
+      - ./service_auth:/app
     working_dir: /app
     env_file:
-      - ./api/.env
+      - ./.env
     command: bash -c 'npm i && npm run start' #for npm modules installation inside container without hot reloading in dev environment
     #command: bash -c 'npm i && npm run dev' #for npm modules installation inside container and hot reloading in dev environment (works only if nodemon is already installed in container)
     #command: npm start #for production environment
@@ -22,17 +22,17 @@ services:
     depends_on:
       - iut_db_atelier
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
 
   iut_db_atelier:
     container_name: iut_db_atelier
     image: mariadb:latest
-    env_file: ./api/.env
+    env_file: ./.env
     volumes:
       - ./db:/var/lib/mysql
       - ./mysql/script_db_reunionou.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
 
   atelier_adminer:
     container_name: atelier_adminer
@@ -42,7 +42,7 @@ services:
     depends_on:
       - iut_db_atelier
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
 
   atelier_php_my_admin:
     container_name: atelier_php_my_admin
@@ -57,4 +57,4 @@ services:
     depends_on:
       - iut_db_atelier
     networks: 
-      - docker_nodejs_bootstrap
+      - network_atelier
