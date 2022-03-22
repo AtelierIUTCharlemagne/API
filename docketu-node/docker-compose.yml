@@ -1,45 +1,74 @@
 version: "3"
 
 networks:
-  docker_nodejs_bootstrap:
+  network_atelier:
     driver: bridge
 
 services:
-  api:
-    container_name: docker_nodejs_bootstrap_api
+  service_auth:
+    container_name: service_auth
     image: node
     ports:
-      - "19100:3000"
+      - "62349:3000"
     volumes:
-      - ./api:/app
+      - ./service_auth:/app
     working_dir: /app
     env_file:
-      - ./api/.env
-    command: bash -c 'npm i && npm run dev' #for npm modules installation inside container without hot reloading in dev environment
-    #command: bash -c 'npm i && npm run dev' #for npm modules installation inside container and hot reloading in dev environment (works only if nodemon is already installed in container)
-    #command: npm start #for production environment
-    #restart: unless-stopped #to activate in production environment
+      - ./.env
+    command: bash -c 'npm i && npm run dev'
     depends_on:
       - iut_db_atelier
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
+
+  service_gateway:
+    container_name: service_gateway
+    image: node:lts
+    env_file: ./.env
+    working_dir: /app
+    volumes:
+      - ./service_gateway:/app
+    ports:
+      - 62346:3001
+    command: bash -c 'npm i && npm run dev'
+    depends_on:
+      - iut_db_atelier
+    links:
+      - iut_db_atelier
+    networks:
+      - network_atelier
 
   iut_db_atelier:
     container_name: iut_db_atelier
     image: mariadb:latest
-    env_file: ./api/.env
+    env_file: ./.env
     volumes:
       - ./db:/var/lib/mysql
       - ./mysql/script_db_reunionou.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
 
   atelier_adminer:
     container_name: atelier_adminer
     image: adminer
     ports:
-      - 8080:8080
+      - 62340:8080
     depends_on:
       - iut_db_atelier
     networks:
-      - docker_nodejs_bootstrap
+      - network_atelier
+
+  atelier_php_my_admin:
+    container_name: atelier_php_my_admin
+    image: phpmyadmin:latest
+    # links: 
+    #   - iut_db_atelier
+    environment:
+      PMA_HOST: iut_db_atelier
+      PMA_PORT: 3306
+    ports:
+      - 62347:80
+    depends_on:
+      - iut_db_atelier
+    networks: 
+      - network_atelier
