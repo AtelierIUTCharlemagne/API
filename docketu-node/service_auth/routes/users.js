@@ -7,7 +7,12 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const methodNotAllowed = require('../errors/methodNotAllowed.js');
-
+/**
+ * Route : /users
+ * Méthode : GET
+ * Description : récupération de tous les users 
+ * retour : JSON de la liste de tous les users
+ */
 router.route('/')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
@@ -44,6 +49,13 @@ router.route('/')
 
     })
 
+/**
+ * Route : /signup
+ * Méthode : POST
+ * Description : permet d'inscrire un utilisateur
+ * params : username, email, passwd
+ * Retour : JSON de l'utilisateur contenant son username et son email
+ */
 router.route('/signup')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
@@ -62,7 +74,6 @@ router.route('/signup')
                 "user": {
                     'username': username,
                     'email': email,
-                    'password': password,
                 }
             })
         })
@@ -76,6 +87,13 @@ router.route('/signup')
     })
     .get(methodNotAllowed)
 
+/**
+ * Route : /signin
+ * Méthode : POST
+ * Description : permet de connecter un utilisateur
+ * params : email, passwd
+ * Retour : JWT contenant les informations de l'utilisateur
+ */
 router.route('/signin')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
