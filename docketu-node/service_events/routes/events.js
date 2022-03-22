@@ -50,7 +50,7 @@ router.route('/create')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
-        const { title, address, localisation, date_events,user_id_user } = req.body
+        const { title, address, localisation, date_events, user_id_user } = req.body
         const token = uuidv4();
         const last_update = knex.fn.now();
         knex.from('events').insert(
@@ -61,7 +61,7 @@ router.route('/create')
                 'token': token,
                 'date_events': date_events,
                 'last_update': last_update,
-                'user_id_user' : user_id_user,
+                'user_id_user': user_id_user,
             }
         ).then(() => {
             res.status(201).json({
@@ -71,8 +71,7 @@ router.route('/create')
                     'localisation': localisation,
                     'token': token,
                     'date_events': date_events,
-                    'last_update': last_update,
-                    'user_id_user' : user_id_user,
+                    'user_id_user': user_id_user,
                 }
             })
         })
