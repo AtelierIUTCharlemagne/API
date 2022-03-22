@@ -17,7 +17,7 @@ router.route('/')
     .get(function (req, res, next) {
         console.log(axios)
         console.log('/'+req.path)
-        axios.get('/users/' + req.path).then(resp => {
+        axios.get('/users' + req.path).then(resp => {
             
             
         res.json(resp.data)
