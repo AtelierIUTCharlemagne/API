@@ -3,6 +3,7 @@ const router = express.Router();
 const knex = require('../knex.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -49,20 +50,29 @@ router.route('/create')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
-        const { username, email, passwd } = req.body
-        const password = await bcrypt.hash(passwd, 10);
-        knex.from('user').insert(
+        const { title, address, localisation, date_events,user_id_user } = req.body
+        const token = uuidv4();
+        const last_update = knex.fn.now();
+        knex.from('events').insert(
             {
-                'username': username,
-                'email': email,
-                'password': password,
+                'title': title,
+                'address': address,
+                'localisation': localisation,
+                'token': token,
+                'date_events': date_events,
+                'last_update': last_update,
+                'user_id_user' : user_id_user,
             }
         ).then(() => {
             res.status(201).json({
-                "user": {
-                    'username': username,
-                    'email': email,
-                    'password': password,
+                "event": {
+                    'title': title,
+                    'address': address,
+                    'localisation': localisation,
+                    'token': token,
+                    'date_events': date_events,
+                    'last_update': last_update,
+                    'user_id_user' : user_id_user,
                 }
             })
         })
