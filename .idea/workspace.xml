@@ -20,14 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="189dba87-31dc-4ed1-ac72-7db4549c704c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/API.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docketu-node/service_events/routes/events_annex.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_auth/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_auth/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_events/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_events/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_gateway/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_gateway/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docketu-node/service_events/routes/events_annex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_events/routes/events_annex.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +69,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1647943688259</updated>
-      <workItem from="1647943690333" duration="7952000" />
+      <workItem from="1647943690333" duration="10590000" />
     </task>
     <servers />
   </component>
@@ -107,10 +101,10 @@
     </state>
     <state x="442" y="218" key="Vcs.Push.Dialog.v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1647960979394" />
     <state x="2472" y="273" key="Vcs.Push.Dialog.v2/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1647960704971" />
-    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1647954734391">
+    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1648041354990">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1647954734391" />
+    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1648041354990" />
     <state x="386" y="145" key="git4idea.branch.GitSmartOperationDialog" timestamp="1647957736973">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
