@@ -38,6 +38,30 @@ router.route('/create')
         })
     })
     .get(methodNotAllowed)
+// Route answer
+router.route('/answer')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(async (req, res, next) => {
+        axios.post('/events' + req.path, req.body).then(resp => {
+            res.json(resp.data)
+            return res
+        })
+    })
+    .get(methodNotAllowed)
+//Route comment
+router.route('/comment')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(async (req, res, next) => {
+        axios.post('/events' + req.path, req.body).then(resp => {
+            res.json(resp.data)
+            return res
+        })
+    })
+    .get(methodNotAllowed)
 
 router.route('/:id')
     .patch(methodNotAllowed)
