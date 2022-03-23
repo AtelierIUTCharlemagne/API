@@ -39,8 +39,10 @@ router.route('/signin')
     .put(methodNotAllowed)
     .post(async (req, res, next ) => {
         axios.post('/users' + req.path, req.body).then(resp => {
-        res.json(resp.data)
+            res.json(resp.data)
         return res
+        }).catch(function (error){
+            res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)

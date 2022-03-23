@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 module.exports = function (req, res, next) {
     try {
-        if (!req.path.includes('/users'))
+        if (req.path.includes('/create'))
             if (req.headers.authorization) {
                 const token = req.headers.authorization.split(' ')[1]
                 if (jwt.verify(token, process.env.JWT_SECRET))
@@ -25,5 +25,4 @@ module.exports = function (req, res, next) {
     } catch (err) {
         throw new Error(err)
     }
-
 }
