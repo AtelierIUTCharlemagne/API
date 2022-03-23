@@ -25,7 +25,7 @@ router.route('/')
             knex.from('events')
                 .select('*')
                 .where({
-                    'user_id_user':req.query.user_id
+                    'user_id_user': req.query.user_id
                 })
                 .then((events) => {
                     if (events == null) {
@@ -127,6 +127,116 @@ router.route('/create')
     .get(methodNotAllowed)
 
 /**
+ * Route : /events/answer 
+ * Méthode : POST
+ * Description : permet de répondre (présence ou non) à un evenement par la méthode post
+ * params : pseudo, present, user_id_user, events_id_events
+ * retour : 201 ok ou 401 mauvaise requete ou 500 erreur serveur
+ * */
+router.route('/answer')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(async (req, res, next) => {
+        const { pseudo, present, user_id_user, events_id_events } = req.body
+        if (!user_id_user && pseudo) {
+            // on insere le pseudo sans user id
+            insertAnswer(res, pseudo, present, user_id_user, events_id_events)
+        } else if (user_id_user && !pseudo) {
+            // on va recuperer le username de l'utilisateur pour l'insérer à la place du pseudo
+            knex.from('user')
+                .select('id_user', 'username')
+                .where({
+                    'id_user': user_id_user
+                }).first()
+                .then(async (user) => {
+                    if (!user) {
+                        res.status(400).json({
+                            error: "l'utilisateur n'existe pas",
+                            status: "error"
+                        }); return;
+                    }
+                    const username = user.username
+                    insertAnswer(res, username, present, user_id_user, events_id_events)
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        "type": "error",
+                        "error": 500,
+                        "message": `Erreur de connexion à la base de données ` + err
+                    });
+                })
+            // on va chercher le username du joueur 
+        } else {
+            res.status(400).json({
+                "type": "error",
+                "error": 400,
+                "message": `Erreur dans la requete`
+            });
+        }
+
+    })
+    .get(methodNotAllowed)
+
+/**
+ * Route : /events/comment 
+ * Méthode : POST
+ * Description : permet d'ajouter un evenementaire par la méthode post
+ * params : events_id_events, text, user_id_user
+ * retour : 201 ok ou 401 mauvaise requete ou 500 erreur serveur
+ * */
+router.route('/comment')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(async (req, res, next) => {
+        const { events_id_events, text, user_id_user } = req.body
+        // On verifie si l'utilisateur a répond à l'invitation avant de commenter l'evenement
+        knex.from('events_annex')
+            .select('id_events_annex')
+            .where({
+                'user_id_user': user_id_user,
+                'events_id_events': events_id_events
+            })
+            .then((answered) => {
+                if (answered == null || answered.length == 0) {
+                    res.status(404).json({
+                        "type": "error",
+                        "error": 404,
+                        "message": `Il faut d'abord répondre à l'invitation de l'evenement`
+                    });
+                } else {
+                    knex.from('comment').insert(
+                        {
+                            'events_id_events': events_id_events,
+                            'text': text,
+                            'user_id_user': user_id_user,
+                        }
+                    ).then(() => {
+                        res.status(201).json({
+                            "message": "created"
+                        })
+                    }).catch((err) => {
+                        // Verifier si l'event existe
+                        // Verifier si l'user existe
+                        res.status(500).json({
+                            "type": "error",
+                            "error": 500,
+                            "message": `Erreur, lors de l'insertion en base de données`
+                        });
+                    })
+                }
+            }).catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+    })
+    .get(methodNotAllowed)
+
+/**
  * Route : /events/id (id d'un event)
  * Méthode : GET
  * Description : Retourne l'event portant l'id passé en parametre
@@ -162,6 +272,26 @@ router.route('/:id')
             })
     })
 
+function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
+    knex.from('events_annex').insert(
+        {
+            'pseudo': pseudo,
+            'present': present,
+            'user_id_user': user_id_user,
+            'events_id_events': events_id_events
+        }
+    ).then(() => {
+        res.status(201).json({
+            "message": "created"
+        })
+    }).catch((err) => {
+        res.status(500).json({
+            "type": "error",
+            "error": 500,
+            "message": `Erreur de connexion à la base de données ` + err
+        });
+    })
+}
 
 
 module.exports = router;
