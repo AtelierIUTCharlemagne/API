@@ -9,7 +9,7 @@ const cors = require('cors');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const eventsRouter = require('./routes/events');
-const eventAnnexRouter = require('./routes/events_annex');
+// const eventAnnexRouter = require('./routes/events_annex');
 
 const app = express();
 app.use(cors());
@@ -27,7 +27,7 @@ app.use(authMiddleware);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
-app.use('/events_annex', eventsRouter);
+// app.use('/events_annex', eventAnnexRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

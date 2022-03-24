@@ -236,6 +236,47 @@ router.route('/comment')
     })
     .get(methodNotAllowed)
 
+
+
+/**
+ * Route : /event/token
+ * Méthode : GET
+ * Description : Gener un token avec les elements de l'event
+ * params : title, address, token, date_events
+ * Retour : JWT contenant les information event
+ */
+router.route('/token')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .get(function (req, res, next) {
+        const { id_events } = req.body
+        knex.from('events').select('id_events','title', 'address', 'token', 'date_events')
+            .where({
+                'id_events': id_events
+            })
+            .then( (user) => {
+                const token = jwt.sign(
+                    {
+                        id: user.id_user,
+                        username: user.username,
+                        email : user.email,
+                        create_time : user.create_time,
+                    },
+                    JWT_SECRET,
+                );
+
+                res.status(200).json({ data: token, status: "ok" });
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+    })
+    .get(methodNotAllowed)
 /**
  * Route : /events/id (id d'un event)
  * Méthode : GET
@@ -292,6 +333,15 @@ function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
         });
     })
 }
+
+
+/* ------------------------*/
+
+
+
+
+
+
 
 
 module.exports = router;
