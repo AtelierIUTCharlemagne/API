@@ -4,6 +4,7 @@ const knex = require('../knex.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const jwt_decode = require('jwt-decode');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -251,22 +252,15 @@ router.route('/token')
     .put(methodNotAllowed)
     .get(function (req, res, next) {
         const { id_events } = req.body
-        knex.from('events').select('id_events','title', 'address', 'token', 'date_events')
+        // knex.from('events').select('id_events','title', 'address', 'token', 'date_events')
+        knex.from('events').select('token')
             .where({
                 'id_events': id_events
             })
             .then( (user) => {
-                const token = jwt.sign(
-                    {
-                        id: user.id_user,
-                        username: user.username,
-                        email : user.email,
-                        create_time : user.create_time,
-                    },
-                    JWT_SECRET,
-                );
-
-                res.status(200).json({ data: token, status: "ok" });
+                console.log(user)
+                const token = user.id_events
+                res.status(200).json({ data: user, status: "ok" });
             })
             .catch((err) => {
                 res.status(500).json({
