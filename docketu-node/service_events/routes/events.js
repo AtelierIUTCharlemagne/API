@@ -191,20 +191,57 @@ router.route('/comment')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         const { events_id_events, text, user_id_user } = req.body
-        // On verifie si l'utilisateur a répond à l'invitation avant de commenter l'evenement
-        knex.from('events_annex')
-            .select('id_events_annex')
+        // On vérifie si l'utilisateur est le créateur de l'événement 
+        knex.from('events')
+            .select('id_events')
             .where({
                 'user_id_user': user_id_user,
-                'events_id_events': events_id_events
+                'id_events' : events_id_events
             })
-            .then((answered) => {
-                if (answered == null || answered.length == 0) {
-                    res.status(404).json({
-                        "type": "error",
-                        "error": 404,
-                        "message": `Il faut d'abord répondre à l'invitation de l'evenement`
-                    });
+            .then((creator) => {
+                if (creator == null || creator.length == 0) {
+                    // On verifie si l'utilisateur à répondu à l'invitation avant de commenter l'evenement
+                    knex.from('events_annex')
+                        .select('id_events_annex')
+                        .where({
+                            'user_id_user': user_id_user,
+                            'events_id_events': events_id_events
+                        })
+                        .then((answered) => {
+                            if (answered == null || answered.length == 0) {
+                                res.status(404).json({
+                                    "type": "error",
+                                    "error": 404,
+                                    "message": `Il faut d'abord répondre à l'invitation de l'evenement`
+                                });
+                            } else {
+                                knex.from('comment').insert(
+                                    {
+                                        'events_id_events': events_id_events,
+                                        'text': text,
+                                        'user_id_user': user_id_user,
+                                    }
+                                ).then(() => {
+                                    res.status(201).json({
+                                        "message": "created"
+                                    })
+                                }).catch((err) => {
+                                    // Verifier si l'event existe
+                                    // Verifier si l'user existe
+                                    res.status(500).json({
+                                        "type": "error",
+                                        "error": 500,
+                                        "message": `Erreur, lors de l'insertion en base de données`
+                                    });
+                                })
+                            }
+                        }).catch((err) => {
+                            res.status(500).json({
+                                "type": "error",
+                                "error": 500,
+                                "message": `Erreur de connexion à la base de données ` + err
+                            });
+                        })
                 } else {
                     knex.from('comment').insert(
                         {
@@ -226,6 +263,7 @@ router.route('/comment')
                         });
                     })
                 }
+
             }).catch((err) => {
                 res.status(500).json({
                     "type": "error",
@@ -233,6 +271,7 @@ router.route('/comment')
                     "message": `Erreur de connexion à la base de données ` + err
                 });
             })
+
     })
     .get(methodNotAllowed)
 
