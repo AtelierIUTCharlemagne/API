@@ -31,11 +31,13 @@ services:
     working_dir: /app
     env_file:
       - ./.env
-    command: bash -c 'npm i && npm run dev'
+    command: bash -c 'npm run dev'
     depends_on:
       - iut_db_atelier
     networks:
-      - network_atelier
+      network_atelier:
+        aliases: 
+          - service.events
 
   service_gateway:
     container_name: service_gateway
@@ -46,11 +48,13 @@ services:
       - ./service_gateway:/app
     ports:
       - 62346:3001
-    command: bash -c 'npm i && npm run dev'
+    command: bash -c 'npm run dev'
     depends_on:
       - iut_db_atelier
-    links:
-      - iut_db_atelier
+      - service_events
+      - service_auth
+    links: 
+      - service_events
     networks:
       - network_atelier
 
