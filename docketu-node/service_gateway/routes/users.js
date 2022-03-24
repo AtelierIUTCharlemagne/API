@@ -17,6 +17,8 @@ router.route('/')
     .get(function (req, res, next) {
         axios.get('/users' + req.path).then(resp => {    
         res.json(resp.data)
+    }).catch(function (error){
+        res.json(error.response.data)
     })
 })
 
@@ -26,8 +28,9 @@ router.route('/signup')
     .put(methodNotAllowed)
     .post(async (req, res, next ) => {
         axios.post('/users' + req.path, req.body).then(resp => {
-        res.json(resp.data)
-        return res
+            res.json(resp.data)
+        }).catch(function (error){
+            res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
@@ -40,7 +43,6 @@ router.route('/signin')
     .post(async (req, res, next ) => {
         axios.post('/users' + req.path, req.body).then(resp => {
             res.json(resp.data)
-        return res
         }).catch(function (error){
             res.json(error.response.data)
         })

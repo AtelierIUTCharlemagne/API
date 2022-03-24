@@ -23,6 +23,10 @@ module.exports = function (req, res, next) {
         else
             next()
     } catch (err) {
-        throw new Error(err)
+        res.status(401).json({
+            "type": "error",
+            "error": 401,
+            "message": "le token n'est pas bon: " + err
+        })
     }
 }

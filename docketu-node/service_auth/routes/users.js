@@ -76,14 +76,13 @@ router.route('/signup')
                     'email': email,
                 }
             })
+        }).catch((err) => {
+            res.status(500).json({
+                "type": "error",
+                "error": 500,
+                "message": `Erreur de connexion à la base de données ` + err
+            });
         })
-            .catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
-            })
     })
     .get(methodNotAllowed)
 
@@ -113,8 +112,8 @@ router.route('/signin')
                     {
                         id: user.id_user,
                         username: user.username,
-                        email : user.email,
-                        create_time : user.create_time,
+                        email: user.email,
+                        create_time: user.create_time,
                     },
                     JWT_SECRET,
                 );
