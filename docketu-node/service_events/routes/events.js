@@ -13,7 +13,7 @@ const methodNotAllowed = require('../errors/methodNotAllowed.js');
  * Route : /events
  * Méthode : GET
  * Description : en ajoutant ?user_id=1 on recupère la liste des evenements de l'utilisateur portant l'id 1
- * retour : JSON de la liste de tous les evenements
+ * @returns : JSON de la liste de tous les evenements
  */
 router.route('/')
     .patch(methodNotAllowed)
