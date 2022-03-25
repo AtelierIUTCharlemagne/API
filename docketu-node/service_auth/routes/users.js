@@ -131,4 +131,41 @@ router.route('/signin')
     .get(methodNotAllowed)
 
 
+
+
+/**
+ * Route : /delete
+ * Méthode : POST
+ * Description : suprime un user avec son id
+ * params : id_user
+ * Retour :
+ */
+router.route('/delete/:id')
+    .patch(methodNotAllowed)
+    .post(methodNotAllowed)
+    .put(methodNotAllowed)
+    .delete(function (req, res, next) {
+
+        knex.from('user').delete('*')
+            .where({
+                'id_user': req.params.id
+            })
+            .then((user) => {
+                // if (!user) { res.status(400).json({ error: "Invalid username or password", status: "error" }); return; }
+
+                // if ( bcrypt.compare(passwd, user.password)) { res.status(400).json({ error: "Invalid username or password", status: "error" }); return; }
+
+                res.status(200).json({ data: user, status: "l'utilisateur a bien etait suprimer " });
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+    })
+    .get(methodNotAllowed)
+
+
 module.exports = router;
