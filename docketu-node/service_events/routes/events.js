@@ -14,7 +14,7 @@ const methodNotAllowed = require('../errors/methodNotAllowed.js');
  * Route : /events
  * Méthode : GET
  * Description : en ajoutant ?user_id=1 on recupère la liste des evenements de l'utilisateur portant l'id 1
- * retour : JSON de la liste de tous les evenements
+ * @returns : JSON de la liste de tous les evenements
  */
 router.route('/')
     .patch(methodNotAllowed)
@@ -212,6 +212,7 @@ router.route('/confirm/:id')
                     // res.status(301).redirect("http://localhost:62345/answer?token=UIE14MEN6W")
                     res.status(200).json({ status: "ok" })
                 }
+
             }).catch((err) => {
                 res.status(500).json({
                     "type": "error",
@@ -219,6 +220,7 @@ router.route('/confirm/:id')
                     "message": `Erreur de connexion à la base de données ` + err
                 });
             })
+
     })
 
 
@@ -261,28 +263,78 @@ router.route('/:id')
     .post(methodNotAllowed)
     .put(methodNotAllowed)
     .get(function (req, res, next) {
-        knex.from('events')
-            .select('*')
-            .where({
-                'id_events': req.params.id
-            }).first()
-            .then((event) => {
-                if (event == null) {
-                    res.status(404).json({
+        if (req.query.embed && req.query.embed === "comments") {
+            knex.from('events')
+                .select('*')
+                .where({
+                    'id_events': req.params.id
+                }).first()
+                .then((event) => {
+                    if (event == null) {
+                        res.status(404).json({
+                            "type": "error",
+                            "error": 404,
+                            "message": `ressources non disponibles`
+                        });
+                    } else {
+                        let event_json = {
+                            type: "ressource",
+                            event: event,
+                        }
+                        knex.from('comment')
+                            .select('*')
+                            .where({
+                                'events_id_events': req.params.id
+                            })
+                            .then((comments) => {
+                                if (comments === null) {
+                                    res.status(200).json(event_json)
+                                } else {
+                                    event_json.comments = Array()
+                                    comments.forEach(comment => {
+                                        event_json.comments.push(comment)
+                                    });
+                                    res.status(200).json(event_json)
+                                }
+                            }).catch((err) => {
+                                res.status(500).json({
+                                    "type": "error",
+                                    "error": 500,
+                                    "message": `Erreur de connexion à la base de données ` + err
+                                });
+                            })
+                    }
+                }).catch((err) => {
+                    res.status(500).json({
                         "type": "error",
-                        "error": 404,
-                        "message": `ressources non disponibles`
+                        "error": 500,
+                        "message": `Erreur de connexion à la base de données` + err
                     });
-                } else {
-                    res.status(200).json(event)
-                }
-            }).catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
-            })
+                })
+        } else {
+            knex.from('events')
+                .select('*')
+                .where({
+                    'id_events': req.params.id
+                }).first()
+                .then((event) => {
+                    if (event == null) {
+                        res.status(404).json({
+                            "type": "error",
+                            "error": 404,
+                            "message": `ressources non disponibles`
+                        });
+                    } else {
+                        res.status(200).json(event)
+                    }
+                }).catch((err) => {
+                    res.status(500).json({
+                        "type": "error",
+                        "error": 500,
+                        "message": `Erreur de connexion à la base de données ` + err
+                    });
+                })
+        }
     })
 
 function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {

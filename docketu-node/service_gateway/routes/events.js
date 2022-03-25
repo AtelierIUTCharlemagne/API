@@ -17,11 +17,15 @@ router.route('/')
     .get(function (req, res, next) {
         if (req.query.user_id) {
             axios.get('/events' + req.path + '?user_id=' + req.query.user_id).then(resp => {
-            res.json(resp.data)
-        })
+                res.json(resp.data)
+            }).catch(function (error){
+                res.json(error.response.data)
+            })
         }else {
             axios.get('/events' + req.path).then(resp => {
                 res.json(resp.data)
+            }).catch(function (error){
+                res.json(error.response.data)
             })
         }
         
@@ -32,10 +36,22 @@ router.route('/create')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
-        axios.post('/events' + req.path, req.body).then(resp => {
+        
+
+
+        try {
+            const result = axios.post('/events' + req.path, req.body); 
+            res.json(result.data);  
+        } catch (error) {
+            console.error(error);
+            next(error);
+        }
+        
+        /*axios.post('/events' + req.path, req.body).then(resp => {
             res.json(resp.data)
-            return res
-        })
+        }).catch(function (error){
+            //res.json(error)
+        })*/
     })
     .get(methodNotAllowed)
 // Route answer
@@ -46,7 +62,8 @@ router.route('/answer')
     .post(async (req, res, next) => {
         axios.post('/events' + req.path, req.body).then(resp => {
             res.json(resp.data)
-            return res
+        }).catch(function (error){
+            res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
@@ -58,7 +75,8 @@ router.route('/comment')
     .post(async (req, res, next) => {
         axios.post('/events' + req.path, req.body).then(resp => {
             res.json(resp.data)
-            return res
+        }).catch(function (error){
+            res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
@@ -71,7 +89,8 @@ router.route('/:id')
     .get(function (req, res, next) {
         axios.get('/events/' + req.params.id).then(resp => {
             res.json(resp.data)
-            return res
+        }).catch(function (error){
+            res.json(error.response.data)
         })
     })
 
