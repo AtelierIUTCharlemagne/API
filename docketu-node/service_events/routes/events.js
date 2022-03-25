@@ -4,7 +4,6 @@ const knex = require('../knex.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const jwt_decode = require('jwt-decode');
 const Joi = require('joi');
 
 
