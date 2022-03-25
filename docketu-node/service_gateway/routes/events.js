@@ -36,11 +36,22 @@ router.route('/create')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
-        axios.post('/events' + req.path, req.body).then(resp => {
+        
+
+
+        try {
+            const result = axios.post('/events' + req.path, req.body); 
+            res.json(result.data);  
+        } catch (error) {
+            console.error(error);
+            next(error);
+        }
+        
+        /*axios.post('/events' + req.path, req.body).then(resp => {
             res.json(resp.data)
         }).catch(function (error){
-            res.json(error.response.data)
-        })
+            //res.json(error)
+        })*/
     })
     .get(methodNotAllowed)
 // Route answer
