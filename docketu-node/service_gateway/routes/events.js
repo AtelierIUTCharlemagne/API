@@ -40,11 +40,13 @@ router.route('/create')
 
 
         try {
-            const result = axios.post('/events' + req.path, req.body); 
-            res.json(result.data);  
+            const result = await axios.post('/events' + req.path, req.body); 
+            return res.json(result.data);  
         } catch (error) {
-            console.error(error);
-            next(error);
+            return res.json(error);  
+            //console.error(error);
+            //next(error);
+
         }
         
         /*axios.post('/events' + req.path, req.body).then(resp => {
@@ -54,6 +56,7 @@ router.route('/create')
         })*/
     })
     .get(methodNotAllowed)
+
 // Route answer
 router.route('/answer')
     .patch(methodNotAllowed)

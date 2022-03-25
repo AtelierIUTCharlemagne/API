@@ -10,12 +10,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const methodNotAllowed = require('../errors/methodNotAllowed.js');
 const returnMessage = require('../errors/returnMessage.js');
 
-
-const signupSchema = {
-    email: Joi.string().email(),
-    username: Joi.string().alphanum().min(0).max(25),
-    passwd: Joi.string().alphanum().min(2).max(25)
-  };
 /**
  * Route : /users
  * Méthode : GET
@@ -32,7 +26,7 @@ router.route('/')
         knex.from('user')
             .select('*')
             .then((users) => {
-                
+
                 console.log(users)
                 if (users == null) {
                     res.status(404).json(returnMessage.NOTFOUND);
@@ -72,12 +66,12 @@ router.route('/signup')
             username: Joi.string().required(),
             email: Joi.string().email().required(),
             passwd: Joi.string().required()
-          })
-        
+        })
+
         try {
             Joi.assert(req.body, schema);
         }
-        catch (err) { 
+        catch (err) {
             return res.status(400).json(returnMessage.BADREQUEST);
         }
         const { username, email, passwd } = req.body
@@ -97,8 +91,7 @@ router.route('/signup')
             })
         }).catch((err) => {
             if (err.code === 'ER_DUP_ENTRY') {
-               return res.status(400).json(returnMessage.MAILEXISTEDEJA);
-                
+                return res.status(400).json(returnMessage.MAILEXISTEDEJA);
             }
             return res.status(500).json(returnMessage.databaseError(err));
         })
@@ -116,16 +109,17 @@ router.route('/signin')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
+    .get(methodNotAllowed)
     .post(async (req, res, next) => {
         const schema = Joi.object().keys({
             email: Joi.string().email().required(),
             passwd: Joi.string().required()
-          })
-        
+        })
+
         try {
             Joi.assert(req.body, schema);
         }
-        catch (err) { 
+        catch (err) {
             return res.status(400).json(returnMessage.BADREQUEST);
         }
         const { email, passwd } = req.body
@@ -134,9 +128,21 @@ router.route('/signin')
                 'email': email
             }).first()
             .then(async (user) => {
-                if (!user) { res.status(400).json({ error: "Invalid username or password", status: "error" }); return; }
+                if (!user) {
+                    return res.status(400).json({ type: "error", error: 400, message: "User not found" });
+                }
+                const verify_password = await bcrypt.compare(passwd, user.password);
+                if (! verify_password) {
+                    console.log("pass are not same");
+                    
+                    return res.status(400).json({ type: "error", error: 400, error: "Invalid password for this mail" });
+                    
+                    console.log("et alors");
+                
+                }
+            console.log("alors alors");
 
-                if (! await bcrypt.compare(passwd, user.password)) { res.status(400).json({ error: "Invalid username or password", status: "error" }); return; }
+
 
                 const token = jwt.sign(
                     {
@@ -148,17 +154,14 @@ router.route('/signin')
                     JWT_SECRET,
                 );
 
-                res.status(200).json({ data: token, status: "ok" });
+                //TODO update last connexion
+                return res.status(200).json({ data: token, status: "ok" });
             })
             .catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
+                return res.status(500).json(returnMessage.databaseError(err));
             })
+
     })
-    .get(methodNotAllowed)
 
 
 module.exports = router;
