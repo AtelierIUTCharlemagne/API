@@ -22,7 +22,7 @@ USE `db_reunionou` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`user` (
   `id_user` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(64) NULL,
+  `username` VARCHAR(16) NULL,
   `email` VARCHAR(255) NULL,
   `password` LONGTEXT NULL,
   `create_time` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
@@ -35,10 +35,10 @@ CREATE TABLE IF NOT EXISTS `db_reunionou`.`user` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`events` (
   `id_events` INT NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(128) NULL,
-  `address` VARCHAR(255) NULL,
-  `localisation` VARCHAR(128) NULL,
-  `token` VARCHAR(255) NULL,
+  `title` VARCHAR(32) NULL,
+  `address` VARCHAR(16) NULL,
+  `localisation` VARCHAR(45) NULL,
+  `token` VARCHAR(16) NULL,
   `date_events` DATETIME NULL,
   `last_update` DATETIME NULL,
   `user_id_user` INT NOT NULL,
@@ -58,7 +58,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`comment` (
   `id_comment` INT NOT NULL AUTO_INCREMENT,
   `events_id_events` INT NOT NULL,
-  `text` VARCHAR(255) NULL,
+  `text` VARCHAR(45) NULL,
   `user_id_user` INT NOT NULL,
   PRIMARY KEY (`id_comment`, `user_id_user`),
   INDEX `fk_comment_events1_idx` (`events_id_events` ASC),
