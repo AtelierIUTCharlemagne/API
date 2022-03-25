@@ -64,9 +64,9 @@ router.route('/answer')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         axios.post('/events' + req.path, req.body).then(resp => {
-            res.json(resp.data)
+            return res.json(resp.data)
         }).catch(function (error){
-            res.json(error.response.data)
+            return res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
@@ -76,10 +76,11 @@ router.route('/comment')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
+        console.log("u're in gateway POST /events/comment");
         axios.post('/events' + req.path, req.body).then(resp => {
-            res.json(resp.data)
+            return res.json(resp.data)
         }).catch(function (error){
-            res.json(error.response.data)
+            return res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
