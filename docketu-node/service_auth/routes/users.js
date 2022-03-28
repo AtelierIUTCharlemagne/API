@@ -260,7 +260,7 @@ router.route('/admin/signin')
 
 
 /**
- * Route : /delete
+ * Route : /user/delete
  * Méthode : DELETE
  * Description : suprime un user et touts ces events avec son id
  * params : id_user
@@ -295,7 +295,7 @@ router.route('/admin/delete/:id')
 
 
 /**
- * Route : /delete
+ * Route : /event/delete
  * Méthode : DELETE
  * Description : suprime un event
  * params : id_user

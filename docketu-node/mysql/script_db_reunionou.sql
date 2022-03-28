@@ -22,7 +22,7 @@ USE `db_reunionou` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`user` (
   `id_user` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(16) NULL,
+  `username` VARCHAR(30) NULL,
   `email` VARCHAR(255) NULL,
   `password` LONGTEXT NULL,
   `create_time` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS `db_reunionou`.`user` (
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`events` (
   `id_events` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(32) NULL,
-  `address` VARCHAR(16) NULL,
-  `localisation` VARCHAR(45) NULL,
-  `token` VARCHAR(16) NULL,
+  `address` VARCHAR(60) NULL,
+  `localisation` VARCHAR(100) NULL,
+  `token` VARCHAR(255) NULL,
   `date_events` DATETIME NULL,
   `last_update` DATETIME NULL,
   `user_id_user` INT NOT NULL,
@@ -58,7 +58,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`comment` (
   `id_comment` INT NOT NULL AUTO_INCREMENT,
   `events_id_events` INT NOT NULL,
-  `text` VARCHAR(45) NULL,
+  `text` VARCHAR(255) NULL,
   `user_id_user` INT NOT NULL,
   PRIMARY KEY (`id_comment`, `user_id_user`),
   INDEX `fk_comment_events1_idx` (`events_id_events` ASC),
@@ -81,7 +81,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `db_reunionou`.`events_annex` (
   `id_events_annex` INT NOT NULL AUTO_INCREMENT,
-  `pseudo` VARCHAR(32) NULL,
+  `pseudo` VARCHAR(255) NULL,
   `present` BINARY NULL,
   `date_at` DATETIME NULL,
   `user_id_user` INT NULL,
@@ -109,10 +109,26 @@ CREATE TABLE IF NOT EXISTS `db_reunionou`.`admin` (
   `id_admin` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(16) NULL,
   `email` VARCHAR(255) NULL,
-  `password` VARCHAR(32) NULL,
+  `password` VARCHAR(255) NULL,
   `create_time` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_admin`));
 
+INSERT INTO events (title,address,localisation,token,date_events,last_update,user_id_user)
+VALUES
+("anniversaire_mami","Sète","32.5969645568, -111.7979297792","UIE14MEN6WH","2021-11-12 00:00:00","2021-11-12 00:00:00",1),
+  ("rdv_jean","Ajaccio","-67.7927790592, -82.838011904","FWG76WMO2EK","2021-11-12 00:00:00","2021-11-12 00:00:00",3),
+  ("anniversaire_mami","Saint-Brieuc","42.9407051776, 147.9463177216","WUW82PHK5SW","2021-11-12 00:00:00","2021-11-12 00:00:00",1),
+  ("anniversaire_Papy","Reims","83.1886403584, -7.3505230848","LJS66OMP5MM","2021-11-12 00:00:00","2021-11-12 00:00:00",3),
+  ("anniversaire_Laure","Vitrolles","69.261202944, -77.6789656576","XXO18TJE1QP","2021-11-12 00:00:00","2021-11-12 00:00:00",2);
+
+
+INSERT INTO `events_annex` (`pseudo`,`present`,`date_at`,`user_id_user`,`events_id_events`)
+VALUES
+  ("Damon Stam",1,"2021-11-12 00:00:00",1,6),
+  ("Amery Veenstra",0,"2021-11-12 00:00:00",1,6),
+  ("Ramona Thijssen",0,"2021-11-12 00:00:00",5,6),
+  ("Abra Hofman",0,"2021-11-12 00:00:00",1,6),
+  ("Minerva Leenders",0,"2021-11-12 00:00:00",4,6);
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
