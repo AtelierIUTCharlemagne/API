@@ -40,11 +40,13 @@ router.route('/create')
 
 
         try {
-            const result = axios.post('/events' + req.path, req.body); 
-            res.json(result.data);  
+            const result = await axios.post('/events' + req.path, req.body); 
+            return res.json(result.data);  
         } catch (error) {
-            console.error(error);
-            next(error);
+            return res.json(error);  
+            //console.error(error);
+            //next(error);
+
         }
         
         /*axios.post('/events' + req.path, req.body).then(resp => {
@@ -54,6 +56,7 @@ router.route('/create')
         })*/
     })
     .get(methodNotAllowed)
+
 // Route answer
 router.route('/answer')
     .patch(methodNotAllowed)
@@ -61,9 +64,9 @@ router.route('/answer')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         axios.post('/events' + req.path, req.body).then(resp => {
-            res.json(resp.data)
+            return res.json(resp.data)
         }).catch(function (error){
-            res.json(error.response.data)
+            return res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
@@ -73,10 +76,11 @@ router.route('/comment')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
+        console.log("u're in gateway POST /events/comment");
         axios.post('/events' + req.path, req.body).then(resp => {
-            res.json(resp.data)
+            return res.json(resp.data)
         }).catch(function (error){
-            res.json(error.response.data)
+            return res.json(error.response.data)
         })
     })
     .get(methodNotAllowed)
