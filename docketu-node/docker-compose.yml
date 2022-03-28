@@ -21,6 +21,25 @@ services:
     networks:
       - network_atelier
 
+
+  service_admin:
+    container_name: service_admin
+    image: node
+    ports:
+      - "62351:3003"
+    volumes:
+      - ./service_admin:/app
+    working_dir: /app
+    env_file:
+      - ./.env
+    command: bash -c 'npm i && npm run dev'
+    depends_on:
+      - iut_db_atelier
+    networks:
+      network_atelier:
+        aliases:
+          - service.admin
+
   service_events:
     container_name: service_events
     image: node
@@ -53,6 +72,7 @@ services:
       - iut_db_atelier
       - service_events
       - service_auth
+      - service_admin
     links: 
       - service_events
     networks:
