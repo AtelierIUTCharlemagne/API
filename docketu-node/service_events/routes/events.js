@@ -4,7 +4,8 @@ const knex = require('../knex.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const jwt_decode = require('jwt-decode');
+const moment = require('moment');
+
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -95,6 +96,8 @@ router.route('/create')
         const { title, address, localisation, date_events, user_id_user } = req.body
         const token = uuidv4();
         const last_update = knex.fn.now();
+         let test = moment(date_events)
+        console.log(test);
         knex.from('events').insert(
             {
                 'title': title,

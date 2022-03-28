@@ -6,11 +6,9 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const indexAdminRouter = require('./routes/index');
 const usersAdminRouter = require('./routes/admin');
-const eventsRouter = require('./routes/events');
-// const eventAnnexRouter = require('./routes/events_annex');
+const eventsAdminRouter = require('./routes/events');
 
 const app = express();
 app.use(cors());
@@ -21,15 +19,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const authMiddleware = require('./middlewares/auth');
-
-app.use(authMiddleware);
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', indexAdminRouter);
 app.use('/admin', usersAdminRouter);
-app.use('/events', eventsRouter);
-// app.use('/events_annex', eventAnnexRouter);
+app.use('/events', eventsAdminRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
