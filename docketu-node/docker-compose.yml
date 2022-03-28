@@ -26,7 +26,7 @@ services:
     container_name: service_admin
     image: node
     ports:
-      - "62351:3003"
+      - "62344:3003"
     volumes:
       - ./service_admin:/app
     working_dir: /app
