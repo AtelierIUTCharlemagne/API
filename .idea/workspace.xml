@@ -26,12 +26,7 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="189dba87-31dc-4ed1-ac72-7db4549c704c" name="Default Changelist" comment="changement script bdd &#10;sign up&#10;sugn in admin ok&#10;service admin created problem avec port">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_admin/bin/www" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_admin/bin/www" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_admin/routes/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_admin/routes/admin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docketu-node/service_auth/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_auth/routes/users.js" afterDir="false" />
-    </list>
+    <list default="true" id="189dba87-31dc-4ed1-ac72-7db4549c704c" name="Default Changelist" comment="service_admin ok&#10;changement .env &#10;en bin" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,7 +78,7 @@
       <updated>1647943688259</updated>
       <workItem from="1647943690333" duration="11383000" />
       <workItem from="1648459978858" duration="11331000" />
-      <workItem from="1648554511364" duration="2211000" />
+      <workItem from="1648554511364" duration="2587000" />
     </task>
     <task id="LOCAL-00001" summary="feature get all users event ok &#10;feature get all users one event ok">
       <created>1648043540175</created>
@@ -113,7 +108,21 @@
       <option name="project" value="LOCAL" />
       <updated>1648476034288</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="service_admin ok&#10;changement .env &#10;en bin">
+      <created>1648556933025</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1648556933025</updated>
+    </task>
+    <task id="LOCAL-00006" summary="service_admin ok&#10;changement .env &#10;en bin">
+      <created>1648557114632</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1648557114632</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -148,7 +157,8 @@
     <MESSAGE value="guillaume insertion des nouvel routes  dans les README.md" />
     <MESSAGE value="sign up&#10;sugn in admin ok&#10;service admin created problem avec port" />
     <MESSAGE value="changement script bdd &#10;sign up&#10;sugn in admin ok&#10;service admin created problem avec port" />
-    <option name="LAST_COMMIT_MESSAGE" value="changement script bdd &#10;sign up&#10;sugn in admin ok&#10;service admin created problem avec port" />
+    <MESSAGE value="service_admin ok&#10;changement .env &#10;en bin" />
+    <option name="LAST_COMMIT_MESSAGE" value="service_admin ok&#10;changement .env &#10;en bin" />
   </component>
   <component name="WindowStateProjectService">
     <state x="147" y="69" key="MergeDialog" timestamp="1647943765709">
