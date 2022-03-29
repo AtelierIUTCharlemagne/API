@@ -7,11 +7,12 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const methodNotAllowed = require('../errors/methodNotAllowed.js');
+
 /**
- * Route : /users
+ * Route : /admin/
  * Méthode : GET
- * Description : récupération de tous les users 
- * retour : JSON de la liste de tous les users
+ * Description : récupération de tous les admin
+ * retour : JSON de la liste de tous les admin
  */
 router.route('/')
     .patch(methodNotAllowed)
@@ -20,7 +21,7 @@ router.route('/')
     .post(methodNotAllowed)
     .get(function (req, res, next) {
 
-        knex.from('user')
+        knex.from('admin')
             .select('*')
             .then((users) => {
                 console.log(users)
@@ -32,29 +33,29 @@ router.route('/')
                     });
                 } else {
                     let liste_users =
-                    {
-                        type: "collection",
-                        count: users.length,
-                        users: users
-                    }
+                        {
+                            type: "collection",
+                            count: users.length,
+                            users: users
+                        }
                     res.status(200).json(liste_users)
                 }
             }).catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
-            })
+            res.status(500).json({
+                "type": "error",
+                "error": 500,
+                "message": `Erreur de connexion à la base de données ` + err
+            });
+        })
 
     })
 
 /**
- * Route : /signup
+ * Route : /admin/signup
  * Méthode : POST
- * Description : permet d'inscrire un utilisateur
+ * Description : permet d'inscrire un admin
  * params : username, email, passwd
- * Retour : JSON de l'utilisateur contenant son username et son email
+ * Retour : JSON de l'admin contenant son username et son email
  */
 router.route('/signup')
     .patch(methodNotAllowed)
@@ -63,7 +64,7 @@ router.route('/signup')
     .post(async (req, res, next) => {
         const { username, email, passwd } = req.body
         const password = await bcrypt.hash(passwd, 10);
-        knex.from('user').insert(
+        knex.from('admin').insert(
             {
                 'username': username,
                 'email': email,
@@ -89,9 +90,9 @@ router.route('/signup')
 /**
  * Route : /signin
  * Méthode : POST
- * Description : permet de connecter un utilisateur
+ * Description : permet de connecter un admin
  * params : email, passwd
- * Retour : JWT contenant les informations de l'utilisateur
+ * Retour : JWT contenant les informations de l'admin
  */
 router.route('/signin')
     .patch(methodNotAllowed)
@@ -99,7 +100,7 @@ router.route('/signin')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         const { email, passwd } = req.body
-        knex.from('user').select('id_user', 'username', 'email', 'password', 'create_time', 'last_connection')
+        knex.from('admin').select('id_admin', 'username', 'email', 'password', 'create_time')
             .where({
                 'email': email
             }).first()
@@ -117,8 +118,8 @@ router.route('/signin')
                     },
                     JWT_SECRET,
                 );
-               
-                res.status(200).json({ data: token,data1: decodedToken, status: "ok" });
+
+                res.status(200).json({ data: token, status: "ok" });
             })
             .catch((err) => {
                 res.status(500).json({
@@ -130,17 +131,57 @@ router.route('/signin')
     })
     .get(methodNotAllowed)
 
+/**
+ * Route : /admin/users
+ * Méthode : GET
+ * Description : récupération de tous les users
+ * retour : JSON de la liste de tous les users
+ */
+router.route('/users')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(methodNotAllowed)
+    .get(function (req, res, next) {
 
-/*-------------route admin -----------------*/
+        knex.from('user')
+            .select('*')
+            .then((users) => {
+                console.log(users)
+                if (users == null) {
+                    res.status(404).json({
+                        "type": "error",
+                        "error": 404,
+                        "message": `ressources non disponibles`
+                    });
+                } else {
+                    let liste_users =
+                        {
+                            type: "collection",
+                            count: users.length,
+                            users: users
+                        }
+                    res.status(200).json(liste_users)
+                }
+            }).catch((err) => {
+            res.status(500).json({
+                "type": "error",
+                "error": 500,
+                "message": `Erreur de connexion à la base de données ` + err
+            });
+        })
+
+    })
+
 
 /**
- * Route : /delete
+ * Route : /user/delete
  * Méthode : DELETE
- * Description : suprime un user avec son id
+ * Description : suprime un user et touts ces events avec son id
  * params : id_user
  * Retour :
  */
-router.route('/delete/:id')
+router.route('/users/delete/:id')
     .patch(methodNotAllowed)
     .post(methodNotAllowed)
     .put(methodNotAllowed)
@@ -167,15 +208,85 @@ router.route('/delete/:id')
     })
     .get(methodNotAllowed)
 
+/**
+ * Route : /admin/events
+ * Méthode : GET
+ * Description : en ajoutant ?user_id=1 on recupère la liste des evenements de l'utilisateur portant l'id 1
+ * @returns : JSON de la liste de tous les evenements
+ */
+router.route('/events')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(methodNotAllowed)
+    .get(function (req, res, next) {
+        if (req.query.user_id) {
+            knex.from('events')
+                .select('*')
+                .where({
+                    'user_id_user': req.query.user_id
+                })
+                .then((events) => {
+                    if (events == null) {
+                        res.status(404).json({
+                            "type": "error",
+                            "error": 404,
+                            "message": `ressources non disponibles`
+                        });
+                    } else {
+                        let liste_events =
+                            {
+                                type: "collection",
+                                count: events.length,
+                                events: events
+                            }
+                        res.status(200).json(liste_events)
+                    }
+                }).catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+        } else {
+            knex.from('events')
+                .select('*')
+                .then((events) => {
+                    if (events == null) {
+                        res.status(404).json({
+                            "type": "error",
+                            "error": 404,
+                            "message": `ressources non disponibles`
+                        });
+                    } else {
+                        let liste_events =
+                            {
+                                type: "collection",
+                                count: events.length,
+                                events: events
+                            }
+                        res.status(200).json(liste_events)
+                    }
+                }).catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+        }
+    })
+
 
 /**
- * Route : /delete
+ * Route : /event/delete
  * Méthode : DELETE
- * Description : suprime un user avec son id
+ * Description : suprime un event
  * params : id_user
  * Retour :
  */
-router.route('/eventdelete/:id')
+router.route('/events/delete/:id')
     .patch(methodNotAllowed)
     .post(methodNotAllowed)
     .put(methodNotAllowed)
@@ -201,6 +312,7 @@ router.route('/eventdelete/:id')
             })
     })
     .get(methodNotAllowed)
+
 
 
 module.exports = router;
