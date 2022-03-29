@@ -47,4 +47,6 @@ app.use((err, req, res, next) => {
   res.json({ message: "Error" });
 });
 
+console.log("service gateway up");
+
 module.exports = app;

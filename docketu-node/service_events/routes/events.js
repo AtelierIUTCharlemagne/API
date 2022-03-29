@@ -5,11 +5,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
-
+const Joi = require('joi');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const methodNotAllowed = require('../errors/methodNotAllowed.js');
+const returnMessage = require('../errors/returnMessage.js');
 
 /**
  * Route : /events
@@ -31,11 +32,7 @@ router.route('/')
                 })
                 .then((events) => {
                     if (events == null) {
-                        res.status(404).json({
-                            "type": "error",
-                            "error": 404,
-                            "message": `ressources non disponibles`
-                        });
+                        return res.status(404).json(returnMessage.NOTFOUND);
                     } else {
                         let liste_events =
                         {
@@ -43,25 +40,17 @@ router.route('/')
                             count: events.length,
                             events: events
                         }
-                        res.status(200).json(liste_events)
+                        return res.status(200).json(liste_events)
                     }
                 }).catch((err) => {
-                    res.status(500).json({
-                        "type": "error",
-                        "error": 500,
-                        "message": `Erreur de connexion à la base de données ` + err
-                    });
+                    return res.status(500).json(returnMessage.databaseError(err));
                 })
         } else {
             knex.from('events')
                 .select('*')
                 .then((events) => {
                     if (events == null) {
-                        res.status(404).json({
-                            "type": "error",
-                            "error": 404,
-                            "message": `ressources non disponibles`
-                        });
+                        res.status(404).json(returnMessage.NOTFOUND);
                     } else {
                         let liste_events =
                         {
@@ -69,14 +58,10 @@ router.route('/')
                             count: events.length,
                             events: events
                         }
-                        res.status(200).json(liste_events)
+                        return res.status(200).json(liste_events)
                     }
                 }).catch((err) => {
-                    res.status(500).json({
-                        "type": "error",
-                        "error": 500,
-                        "message": `Erreur de connexion à la base de données ` + err
-                    });
+                    res.status(500).json(returnMessage.databaseError(err));
                 })
         }
     })
@@ -92,7 +77,25 @@ router.route('/create')
     .patch(methodNotAllowed)
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
+    .get(methodNotAllowed)
     .post(async (req, res, next) => {
+        const schema = Joi.object().keys({
+            title: Joi.string().required(),
+            address: Joi.string().required(),
+            localisation: Joi.string().required(),
+            //TODO joi.date() ???
+            date_events: Joi.string().required(),
+            user_id_user: Joi.number().required()
+        })
+        try {
+            Joi.assert(req.body, schema);
+            console.log('e');
+        }
+        catch (err) {
+            return res.status(400).json(returnMessage.BADREQUEST);
+        }
+
+
         const { title, address, localisation, date_events, user_id_user } = req.body
         const token = uuidv4();
         const last_update = knex.fn.now();
@@ -109,7 +112,7 @@ router.route('/create')
                 'user_id_user': user_id_user,
             }
         ).then(() => {
-            res.status(201).json({
+            return res.status(201).json({
                 "event": {
                     'title': title,
                     'address': address,
@@ -121,14 +124,10 @@ router.route('/create')
             })
         })
             .catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
+                return res.status(500).json(returnMessage.databaseError(err));
             })
     })
-    .get(methodNotAllowed)
+
 
 /**
  * Route : /events/answer
@@ -155,24 +154,17 @@ router.route('/answer')
                 }).first()
                 .then(async (user) => {
                     if (!user) {
-                        res.status(400).json({
-                            error: "l'utilisateur n'existe pas",
-                            status: "error"
-                        }); return;
+                        return res.status(400).json(returnMessage.USERNOTFOUND); return;
                     }
                     const username = user.username
                     insertAnswer(res, username, present, user_id_user, events_id_events)
                 })
                 .catch((err) => {
-                    res.status(500).json({
-                        "type": "error",
-                        "error": 500,
-                        "message": `Erreur de connexion à la base de données ` + err
-                    });
+                    return res.status(500).json(returnMessage.databaseError(err));
                 })
             // on va chercher le username du joueur
         } else {
-            res.status(400).json({
+            return res.status(400).json({
                 "type": "error",
                 "error": 400,
                 "message": `Erreur dans la requete`
@@ -181,7 +173,102 @@ router.route('/answer')
 
     })
     .get(methodNotAllowed)
+/**
+ * Route : /events/comment 
+ * Méthode : POST
+ * Description : permet d'ajouter un evenementaire par la méthode post
+ * params : events_id_events, text, user_id_user
+ * retour : 201 ok ou 401 mauvaise requete ou 500 erreur serveur
+ * */
+ router.route('/comment')
+ .patch(methodNotAllowed)
+ .delete(methodNotAllowed)
+ .put(methodNotAllowed)
+ .post(async (req, res, next) => {
+     const { events_id_events, text, user_id_user } = req.body
+     // On vérifie si l'utilisateur est le créateur de l'événement 
+     knex.from('events')
+         .select('id_events')
+         .where({
+             'user_id_user': user_id_user,
+             'id_events' : events_id_events
+         })
+         .then((creator) => {
+             if (creator == null || creator.length == 0) {
+                 // On verifie si l'utilisateur à répondu à l'invitation avant de commenter l'evenement
+                 knex.from('events_annex')
+                     .select('id_events_annex')
+                     .where({
+                         'user_id_user': user_id_user,
+                         'events_id_events': events_id_events
+                     })
+                     .then((answered) => {
+                         if (answered == null || answered.length == 0) {
+                             res.status(404).json({
+                                 "type": "error",
+                                 "error": 404,
+                                 "message": `Il faut d'abord répondre à l'invitation de l'evenement`
+                             });
+                         } else {
+                             knex.from('comment').insert(
+                                 {
+                                     'events_id_events': events_id_events,
+                                     'text': text,
+                                     'user_id_user': user_id_user,
+                                 }
+                             ).then(() => {
+                                 res.status(201).json({
+                                     "message": "created"
+                                 })
+                             }).catch((err) => {
+                                 // Verifier si l'event existe
+                                 // Verifier si l'user existe
+                                 res.status(500).json({
+                                     "type": "error",
+                                     "error": 500,
+                                     "message": `Erreur, lors de l'insertion en base de données`
+                                 });
+                             })
+                         }
+                     }).catch((err) => {
+                         res.status(500).json({
+                             "type": "error",
+                             "error": 500,
+                             "message": `Erreur de connexion à la base de données ` + err
+                         });
+                     })
+             } else {
+                 knex.from('comment').insert(
+                     {
+                         'events_id_events': events_id_events,
+                         'text': text,
+                         'user_id_user': user_id_user,
+                     }
+                 ).then(() => {
+                     res.status(201).json({
+                         "message": "created"
+                     })
+                 }).catch((err) => {
+                     // Verifier si l'event existe
+                     // Verifier si l'user existe
+                     res.status(500).json({
+                         "type": "error",
+                         "error": 500,
+                         "message": `Erreur, lors de l'insertion en base de données`
+                     });
+                 })
+             }
 
+         }).catch((err) => {
+             res.status(500).json({
+                 "type": "error",
+                 "error": 500,
+                 "message": `Erreur de connexion à la base de données ` + err
+             });
+         })
+
+ })
+ .get(methodNotAllowed)
 
 /**
  * Route : /events/confirm/id
@@ -204,24 +291,20 @@ router.route('/confirm/:id')
             })
             .then((valide) => {
                 if (valide == null || valide.length === 0) {
-                    res.status(404).json({
+                    res.status(401).json({
                         "type": "error",
-                        "error": 404,
+                        "error": 401,
                         "message": `le token n'est pas valable`
                     });
                 } else {
                     //redirige vers answer
 
-                    // res.status(301).redirect("http://localhost:62345/answer?token=UIE14MEN6W")
-                    res.status(200).json({ status: "ok" })
+                    // return res.status(301).redirect("http://localhost:62345/answer?token=UIE14MEN6W")
+                    return res.status(200).json({ status: "ok" })
                 }
 
             }).catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
+                return res.status(500).json(returnMessage.databaseError(err));
             })
 
     })
@@ -245,17 +328,13 @@ router.route('/token')
             .where({
                 'id_events': id_events
             })
-            .then( (user) => {
+            .then((user) => {
                 console.log(user)
                 const token = user.id_events
-                res.status(200).json({ data: user, status: "ok" });
+                return res.status(200).json({ data: user, status: "ok" });
             })
             .catch((err) => {
-                res.status(500).json({
-                    "type": "error",
-                    "error": 500,
-                    "message": `Erreur de connexion à la base de données ` + err
-                });
+                return res.status(500).json(returnMessage.databaseError(err));
             })
     })
     .get(methodNotAllowed)
@@ -274,11 +353,7 @@ router.route('/:id')
                 }).first()
                 .then((event) => {
                     if (event == null) {
-                        res.status(404).json({
-                            "type": "error",
-                            "error": 404,
-                            "message": `ressources non disponibles`
-                        });
+                        return res.status(404).json(returnMessage.NOTFOUND);
                     } else {
                         let event_json = {
                             type: "ressource",
@@ -291,28 +366,20 @@ router.route('/:id')
                             })
                             .then((comments) => {
                                 if (comments === null) {
-                                    res.status(200).json(event_json)
+                                    return res.status(200).json(event_json)
                                 } else {
                                     event_json.comments = Array()
                                     comments.forEach(comment => {
                                         event_json.comments.push(comment)
                                     });
-                                    res.status(200).json(event_json)
+                                    return res.status(200).json(event_json)
                                 }
                             }).catch((err) => {
-                                res.status(500).json({
-                                    "type": "error",
-                                    "error": 500,
-                                    "message": `Erreur de connexion à la base de données ` + err
-                                });
+                                return res.status(500).json(returnMessage.databaseError(err));
                             })
                     }
                 }).catch((err) => {
-                    res.status(500).json({
-                        "type": "error",
-                        "error": 500,
-                        "message": `Erreur de connexion à la base de données` + err
-                    });
+                    return res.status(500).json(returnMessage.databaseError(err));
                 })
         } else {
             knex.from('events')
@@ -322,20 +389,12 @@ router.route('/:id')
                 }).first()
                 .then((event) => {
                     if (event == null) {
-                        res.status(404).json({
-                            "type": "error",
-                            "error": 404,
-                            "message": `ressources non disponibles`
-                        });
+                        return res.status(404).json(returnMessage.NOTFOUND);
                     } else {
-                        res.status(200).json(event)
+                        return res.status(200).json(event);
                     }
                 }).catch((err) => {
-                    res.status(500).json({
-                        "type": "error",
-                        "error": 500,
-                        "message": `Erreur de connexion à la base de données ` + err
-                    });
+                    return res.status(500).json(returnMessage.databaseError(err));
                 })
         }
     })
@@ -349,15 +408,12 @@ function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
             'events_id_events': events_id_events
         }
     ).then(() => {
-        res.status(201).json({
-            "message": "created"
-        })
+        return res.status(201).json(returnMessage.CREATED);
     }).catch((err) => {
-        res.status(500).json({
-            "type": "error",
-            "error": 500,
-            "message": `Erreur de connexion à la base de données ` + err
-        });
+        if (err.code === "ER_NO_REFERENCED_ROW_2") {
+            return res.status(404).json(returnMessage.EVENTNOTFOUND);
+        }
+        return res.status(500).json(returnMessage.databaseError(err));
     })
 }
 
