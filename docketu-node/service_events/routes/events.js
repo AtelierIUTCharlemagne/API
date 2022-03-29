@@ -346,41 +346,11 @@ router.route('/:id')
     .put(methodNotAllowed)
     .get(function (req, res, next) {
         if (req.query.embed && req.query.embed === "comments") {
-            knex.from('events')
-                .select('*')
-                .where({
-                    'id_events': req.params.id
-                }).first()
-                .then((event) => {
-                    if (event == null) {
-                        return res.status(404).json(returnMessage.NOTFOUND);
-                    } else {
-                        let event_json = {
-                            type: "ressource",
-                            event: event,
-                        }
-                        knex.from('comment')
-                            .select('*')
-                            .where({
-                                'events_id_events': req.params.id
-                            })
-                            .then((comments) => {
-                                if (comments === null) {
-                                    return res.status(200).json(event_json)
-                                } else {
-                                    event_json.comments = Array()
-                                    comments.forEach(comment => {
-                                        event_json.comments.push(comment)
-                                    });
-                                    return res.status(200).json(event_json)
-                                }
-                            }).catch((err) => {
-                                return res.status(500).json(returnMessage.databaseError(err));
-                            })
-                    }
-                }).catch((err) => {
-                    return res.status(500).json(returnMessage.databaseError(err));
-                })
+            getEmbededComments(res,req.params.id);
+        } else if (req.query.embed && req.query.embed === "participants") {
+            getEmbededParticipants(res,req.params.id);
+        } else if (req.query.embed && req.query.embed === "all") {
+            getEmbededAll(res,req.params.id);
         } else {
             knex.from('events')
                 .select('*')
@@ -417,6 +387,80 @@ function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
     })
 }
 
+function getEmbededComments(res,id_events ){
+    knex.from('events')
+    .select('*')
+    .where({
+        'id_events': id_events
+    }).first()
+    .then((event) => {
+        if (event == null) {
+            return res.status(404).json(returnMessage.NOTFOUND);
+        } else {
+            let event_json = {
+                type: "ressource",
+                event: event,
+            }
+            knex.from('comment')
+                .select('*')
+                .where({
+                    'events_id_events': id_events
+                })
+                .then((comments) => {
+                    if (comments === null) {
+                        return res.status(200).json(event_json)
+                    } else {
+                        event_json.comments = Array()
+                        comments.forEach(comment => {
+                            event_json.comments.push(comment)
+                        });
+                        return res.status(200).json(event_json)
+                    }
+                }).catch((err) => {
+                    return res.status(500).json(returnMessage.databaseError(err));
+                })
+        }
+    }).catch((err) => {
+        return res.status(500).json(returnMessage.databaseError(err));
+    })
+}
 
+function getEmbededParticipants(res,id_events){
+    knex.from('events')
+    .select('*')
+    .where({
+        'id_events': id_events
+    }).first()
+    .then((event) => {
+        if (event == null) {
+            return res.status(404).json(returnMessage.NOTFOUND);
+        } else {
+            let event_json = {
+                type: "ressource",
+                event: event,
+            }
+            knex.from('events_annex')
+                .select('user_id_user', 'pseudo', 'present')
+                .where({
+                    'events_id_events': id_events
+                })
+                .then((participants) => {
+                    if (participants === null) {
+                        return res.status(200).json(event_json)
+                    } else {
+                        event_json.participants = Array()
+                        participants.forEach(participant => {
+                            event_json.participants.push(participant)
+                        });
+                        return res.status(200).json(event_json)
+                    }
+                }).catch((err) => {
+                    return res.status(500).json(returnMessage.databaseError(err));
+                })
+        }
+    }).catch((err) => {
+        return res.status(500).json(returnMessage.databaseError(err));
+    })
+}
 
 module.exports = router;
