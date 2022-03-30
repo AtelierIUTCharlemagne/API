@@ -99,7 +99,7 @@ router.route('/signin')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         const { email, passwd } = req.body
-        knex.from('admin').select('id_admin', 'username', 'email', 'password', 'create_time', 'last_connection')
+        knex.from('admin').select('id_admin', 'username', 'email', 'password', 'create_time')
             .where({
                 'email': email
             }).first()
@@ -118,7 +118,7 @@ router.route('/signin')
                     JWT_SECRET,
                 );
                
-                res.status(200).json({ data: token,data1: decodedToken, status: "ok" });
+                res.status(200).json({ data: token, status: "ok" });
             })
             .catch((err) => {
                 res.status(500).json({
