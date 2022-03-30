@@ -78,7 +78,7 @@
             {
                 "message": "created"
             }
-    - (POST) /events/comment
+    - (POST) /events/comment/
         params :
         {
             "text":"Tea",
@@ -91,3 +91,15 @@
             {
                 "message": "created"
             }
+            
+      -(POST) /events/confirm/:id
+      params : 
+      id : UIE14MEN6WH
+      -> verifie le token dans l'url client
+              -> Retour : 
+                  200 et : 
+                  {
+                      "status": "ok"
+                  }
+       
+       
