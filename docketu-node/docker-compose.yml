@@ -88,16 +88,6 @@ services:
     networks:
       - network_atelier
 
-  atelier_adminer:
-    container_name: atelier_adminer
-    image: adminer
-    ports:
-      - 62340:8080
-    depends_on:
-      - iut_db_atelier
-    networks:
-      - network_atelier
-
   atelier_php_my_admin:
     container_name: atelier_php_my_admin
     image: phpmyadmin:latest
