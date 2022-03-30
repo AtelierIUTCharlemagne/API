@@ -63,7 +63,7 @@ router.route('/signup')
     .post(async (req, res, next) => {
         const { username, email, passwd } = req.body
         const password = await bcrypt.hash(passwd, 10);
-        knex.from('user').insert(
+        knex.from('admin').insert(
             {
                 'username': username,
                 'email': email,
@@ -99,7 +99,7 @@ router.route('/signin')
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
         const { email, passwd } = req.body
-        knex.from('user').select('id_user', 'username', 'email', 'password', 'create_time', 'last_connection')
+        knex.from('admin').select('id_admin', 'username', 'email', 'password', 'create_time', 'last_connection')
             .where({
                 'email': email
             }).first()
