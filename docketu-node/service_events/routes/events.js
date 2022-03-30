@@ -137,7 +137,7 @@ router.route('/create')
  * Route : /events/answer
  * Méthode : POST
  * Description : permet de répondre (présence ou non) à un evenement par la méthode post
- * params : pseudo, present, user_id_user, events_id_events
+ * params : pseudo, present, user_id_user, token
  * retour : 201 ok ou 401 mauvaise requete ou 500 erreur serveur
  * */
 router.route('/answer')
@@ -145,10 +145,19 @@ router.route('/answer')
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
     .post(async (req, res, next) => {
-        const { pseudo, present, user_id_user, events_id_events } = req.body
+        const { pseudo, present, user_id_user, token } = req.body
+        let event;
+        //on recup l'id de l'event à partir du token
+        try {
+            event = await knex.from('events').select('id_events').where('token', token).first();
+        } catch (error) {
+            console.log(error);
+            return res.status(401).json(returnMessage.BADREQUEST);
+        }
+            
         if (!user_id_user && pseudo) {
             // on insere le pseudo sans user id
-            insertAnswer(res, pseudo, present, user_id_user, events_id_events)
+            insertAnswer(res, pseudo, present, user_id_user, event.id_events)
         } else if (user_id_user && !pseudo) {
             // on va recuperer le username de l'utilisateur pour l'insérer à la place du pseudo
             knex.from('user')
@@ -158,10 +167,10 @@ router.route('/answer')
                 }).first()
                 .then(async (user) => {
                     if (!user) {
-                        return res.status(400).json(returnMessage.USERNOTFOUND); return;
+                        return res.status(400).json(returnMessage.USERNOTFOUND);
                     }
                     const username = user.username
-                    insertAnswer(res, username, present, user_id_user, events_id_events)
+                    insertAnswer(res, username, present, user_id_user, event.id_events)
                 })
                 .catch((err) => {
                     return res.status(500).json(returnMessage.databaseError(err));
