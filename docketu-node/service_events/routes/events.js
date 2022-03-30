@@ -387,6 +387,7 @@ function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
     })
 }
 
+
 /* @author : Clément Boulet
  * @description : Récupère un événement avec toutes ses informations(participants, commentaires, ...)
  * Fonction vraiment pas propre mais je n'ai pas pris le temps de trouver mieux, il faudra la découper en plusieurs fonctions
@@ -464,4 +465,5 @@ function getEmbededAll(res, id_events) {
             return res.status(500).json(returnMessage.databaseError(err));
         })
 }
+
 module.exports = router;
