@@ -4,9 +4,8 @@ const knex = require('../knex.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const jwt_decode = require('jwt-decode');
+const moment = require('moment');
 const Joi = require('joi');
-
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -100,9 +99,14 @@ router.route('/create')
         const { title, address, localisation, date_events, user_id_user } = req.body
         const token = uuidv4();
         const last_update = knex.fn.now();
+        let test = moment(date_events)
+        console.log(test);
+        const createur = await knex.from('user').select('username').where({ 'id_user': user_id_user }).first()
+        console.log(createur);
         knex.from('events').insert(
             {
                 'title': title,
+                'createur': createur.username,
                 'address': address,
                 'localisation': localisation,
                 'token': token,
@@ -114,6 +118,7 @@ router.route('/create')
             return res.status(201).json({
                 "event": {
                     'title': title,
+                    'createur': createur.username,
                     'address': address,
                     'localisation': localisation,
                     'token': token,
@@ -181,7 +186,102 @@ router.route('/answer')
 
     })
     .get(methodNotAllowed)
+/**
+ * Route : /events/comment 
+ * Méthode : POST
+ * Description : permet d'ajouter un evenementaire par la méthode post
+ * params : events_id_events, text, user_id_user
+ * retour : 201 ok ou 401 mauvaise requete ou 500 erreur serveur
+ * */
+router.route('/comment')
+    .patch(methodNotAllowed)
+    .delete(methodNotAllowed)
+    .put(methodNotAllowed)
+    .post(async (req, res, next) => {
+        const { events_id_events, text, user_id_user } = req.body
+        // On vérifie si l'utilisateur est le créateur de l'événement 
+        knex.from('events')
+            .select('id_events')
+            .where({
+                'user_id_user': user_id_user,
+                'id_events': events_id_events
+            })
+            .then((creator) => {
+                if (creator == null || creator.length == 0) {
+                    // On verifie si l'utilisateur à répondu à l'invitation avant de commenter l'evenement
+                    knex.from('events_annex')
+                        .select('id_events_annex')
+                        .where({
+                            'user_id_user': user_id_user,
+                            'events_id_events': events_id_events
+                        })
+                        .then((answered) => {
+                            if (answered == null || answered.length == 0) {
+                                res.status(404).json({
+                                    "type": "error",
+                                    "error": 404,
+                                    "message": `Il faut d'abord répondre à l'invitation de l'evenement`
+                                });
+                            } else {
+                                knex.from('comment').insert(
+                                    {
+                                        'events_id_events': events_id_events,
+                                        'text': text,
+                                        'user_id_user': user_id_user,
+                                    }
+                                ).then(() => {
+                                    res.status(201).json({
+                                        "message": "created"
+                                    })
+                                }).catch((err) => {
+                                    // Verifier si l'event existe
+                                    // Verifier si l'user existe
+                                    res.status(500).json({
+                                        "type": "error",
+                                        "error": 500,
+                                        "message": `Erreur, lors de l'insertion en base de données`
+                                    });
+                                })
+                            }
+                        }).catch((err) => {
+                            res.status(500).json({
+                                "type": "error",
+                                "error": 500,
+                                "message": `Erreur de connexion à la base de données ` + err
+                            });
+                        })
+                } else {
+                    knex.from('comment').insert(
+                        {
+                            'events_id_events': events_id_events,
+                            'text': text,
+                            'user_id_user': user_id_user,
+                        }
+                    ).then(() => {
+                        res.status(201).json({
+                            "message": "created"
+                        })
+                    }).catch((err) => {
+                        // Verifier si l'event existe
+                        // Verifier si l'user existe
+                        res.status(500).json({
+                            "type": "error",
+                            "error": 500,
+                            "message": `Erreur, lors de l'insertion en base de données`
+                        });
+                    })
+                }
 
+            }).catch((err) => {
+                res.status(500).json({
+                    "type": "error",
+                    "error": 500,
+                    "message": `Erreur de connexion à la base de données ` + err
+                });
+            })
+
+    })
+    .get(methodNotAllowed)
 
 /**
  * Route : /events/confirm/id
@@ -258,42 +358,8 @@ router.route('/:id')
     .post(methodNotAllowed)
     .put(methodNotAllowed)
     .get(function (req, res, next) {
-        if (req.query.embed && req.query.embed === "comments") {
-            knex.from('events')
-                .select('*')
-                .where({
-                    'id_events': req.params.id
-                }).first()
-                .then((event) => {
-                    if (event == null) {
-                        return res.status(404).json(returnMessage.NOTFOUND);
-                    } else {
-                        let event_json = {
-                            type: "ressource",
-                            event: event,
-                        }
-                        knex.from('comment')
-                            .select('*')
-                            .where({
-                                'events_id_events': req.params.id
-                            })
-                            .then((comments) => {
-                                if (comments === null) {
-                                    return res.status(200).json(event_json)
-                                } else {
-                                    event_json.comments = Array()
-                                    comments.forEach(comment => {
-                                        event_json.comments.push(comment)
-                                    });
-                                    return res.status(200).json(event_json)
-                                }
-                            }).catch((err) => {
-                                return res.status(500).json(returnMessage.databaseError(err));
-                            })
-                    }
-                }).catch((err) => {
-                    return res.status(500).json(returnMessage.databaseError(err));
-                })
+        if (req.query.embed && req.query.embed === "all") {
+            getEmbededAll(res, req.params.id);
         } else {
             knex.from('events')
                 .select('*')
@@ -331,6 +397,82 @@ function insertAnswer(res, pseudo, present, user_id_user, events_id_events) {
 }
 
 
-
+/* @author : Clément Boulet
+ * @description : Récupère un événement avec toutes ses informations(participants, commentaires, ...)
+ * Fonction vraiment pas propre mais je n'ai pas pris le temps de trouver mieux, il faudra la découper en plusieurs fonctions
+*/
+function getEmbededAll(res, id_events) {
+    knex.from('events')
+        .select('*')
+        .where({
+            'id_events': id_events
+        }).first()
+        .then((event) => {
+            if (event == null) {
+                return res.status(404).json(returnMessage.NOTFOUND);
+            } else {
+                let event_json = {
+                    type: "ressource",
+                    event: event,
+                }//Récup les participants
+                knex.from('events_annex')
+                    .select('user_id_user', 'pseudo', 'present')
+                    .where({
+                        'events_id_events': id_events
+                    })
+                    .then((participants) => {
+                        if (participants === null) {
+                            //Récup les commentaires dans le cas ou y'a pas de participants
+                            knex.from('comment')
+                                .select('*')
+                                .where({
+                                    'events_id_events': id_events
+                                })
+                                .then((comments) => {
+                                    if (comments === null) {
+                                        return res.status(200).json(event_json)
+                                    } else {
+                                        event_json.comments = Array()
+                                        comments.forEach(comment => {
+                                            event_json.comments.push(comment)
+                                        });
+                                        return res.status(200).json(event_json)
+                                    }
+                                }).catch((err) => {
+                                    return res.status(500).json(returnMessage.databaseError(err));
+                                })
+                        } else {
+                            event_json.participants = Array()
+                            participants.forEach(participant => {
+                                event_json.participants.push(participant)
+                            });
+                            //Récup les commentaires dans le cas où il y a des participants
+                            knex.from('comment')
+                                .select('*')
+                                .where({
+                                    'events_id_events': id_events
+                                })
+                                .then((comments) => {
+                                    if (comments === null) {
+                                        return res.status(200).json(event_json)
+                                    } else {
+                                        event_json.comments = Array()
+                                        comments.forEach(comment => {
+                                            event_json.comments.push(comment)
+                                        });
+                                        return res.status(200).json(event_json)
+                                    }
+                                }).catch((err) => {
+                                    return res.status(500).json(returnMessage.databaseError(err));
+                                })
+                        }
+                    }).catch((err) => {
+                        return res.status(500).json(returnMessage.databaseError(err));
+                    })
+            }
+        }).catch((err) => {
+            return res.status(500).json(returnMessage.databaseError(err));
+        })
+}
 
 module.exports = router;

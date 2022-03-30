@@ -16,11 +16,20 @@
         <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </expand>
-    <select />
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:origin/feature_events_fetch" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="189dba87-31dc-4ed1-ac72-7db4549c704c" name="Default Changelist" comment="feature get all users event ok &#10;feature get all users one event ok">
+    <list default="true" id="189dba87-31dc-4ed1-ac72-7db4549c704c" name="Default Changelist" comment="sign up&#10;sugn in admin ok&#10;service admin created problem avec port">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docketu-node/mysql/script_db_reunionou.sql" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/mysql/script_db_reunionou.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docketu-node/service_auth/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/docketu-node/service_auth/routes/users.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +42,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="users" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -48,16 +57,18 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/docketu-node/service_events/routes" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/docketu-node/service_gateway/routes" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\xampp\htdocs\PROJECT_LCP\atelier_2\API\docketu-node\service_events\routes" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\xampp\htdocs\PROJECT_LCP\atelier_2\API\docketu-node" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\xampp\htdocs\PROJECT_LCP\atelier_2\API\docketu-node\service_gateway\routes" />
+      <recent name="C:\xampp\htdocs\PROJECT_LCP\atelier_2\API\docketu-node" />
+      <recent name="C:\xampp\htdocs\PROJECT_LCP\atelier_2\API\docketu-node\service_events\routes" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -69,6 +80,7 @@
       <option name="presentableId" value="Default" />
       <updated>1647943688259</updated>
       <workItem from="1647943690333" duration="11383000" />
+      <workItem from="1648459978858" duration="8401000" />
     </task>
     <task id="LOCAL-00001" summary="feature get all users event ok &#10;feature get all users one event ok">
       <created>1648043540175</created>
@@ -77,7 +89,21 @@
       <option name="project" value="LOCAL" />
       <updated>1648043540175</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="guillaume insertion des nouvel routes  dans les README.md">
+      <created>1648203813951</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1648203813951</updated>
+    </task>
+    <task id="LOCAL-00003" summary="sign up&#10;sugn in admin ok&#10;service admin created problem avec port">
+      <created>1648475296942</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1648475296942</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -88,15 +114,30 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/feature_events_fetch" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feature get all users event ok &#10;feature get all users one event ok" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature get all users event ok &#10;feature get all users one event ok" />
+    <MESSAGE value="guillaume insertion des nouvel routes  dans les README.md" />
+    <MESSAGE value="sign up&#10;sugn in admin ok&#10;service admin created problem avec port" />
+    <option name="LAST_COMMIT_MESSAGE" value="sign up&#10;sugn in admin ok&#10;service admin created problem avec port" />
   </component>
   <component name="WindowStateProjectService">
     <state x="147" y="69" key="MergeDialog" timestamp="1647943765709">
@@ -112,10 +153,10 @@
     </state>
     <state x="442" y="218" key="Vcs.Push.Dialog.v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1647960979394" />
     <state x="2472" y="273" key="Vcs.Push.Dialog.v2/0.0.1536.864/1920.0.1920.1080@1920.0.1920.1080" timestamp="1647960704971" />
-    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1648041354990">
+    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1648217113761">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
-    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1648041354990" />
+    <state x="586" y="346" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.864/1920.0.1920.1080@0.0.1536.864" timestamp="1648217113761" />
     <state x="386" y="145" key="git4idea.branch.GitSmartOperationDialog" timestamp="1647957736973">
       <screen x="0" y="0" width="1536" height="864" />
     </state>
