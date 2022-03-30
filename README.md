@@ -64,13 +64,13 @@
         {
             "present": false,
             "user_id_user":9,
-            "events_id_events":8
+            "token":"29fbbb71-f342-4487-a949-27c8de795ade"
         }
         ou 
         {
             "present": false,
-            "pseudo" : "un pseudo",
-            "events_id_events":8
+            "pseudo" : "un pseudo", 
+            "token":"29fbbb71-f342-4487-a949-27c8de795ade"
         }
         -> Insere un évenement en base de données
         -> Retour : 
