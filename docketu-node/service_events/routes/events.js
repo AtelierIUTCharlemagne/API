@@ -40,7 +40,26 @@ router.route('/')
                             count: events.length,
                             events: events
                         }
-                        return res.status(200).json(liste_events)
+                        //return res.status(200).json(liste_events);
+                        // Recuperer toutes les lignes de event_annex contenant le user_id  
+                        // Recuperer tous les events concernant 
+                        knex.from('events')
+                        .select('events.id_events','events.title','events.createur','events.address','events.localisation','events.token','events.date_events','events.last_update','events.user_id_user')
+                        .join('events_annex', 'events_annex.events_id_events', 'events.id_events')
+                        .where('events_annex.user_id_user', req.query.user_id)
+                        .then((events) => {
+                            if (events == null) {
+                                return res.status(404).json(returnMessage.NOTFOUND);
+                            } else {
+                                events.forEach(event => {
+                                    liste_events.events.push(event);
+                                });
+                                return res.status(200).json(liste_events);
+                            }
+                        }).catch(err => {
+                            return res.status(500).json(returnMessage.databaseError(err));
+                        })
+                        
                     }
                 }).catch((err) => {
                     return res.status(500).json(returnMessage.databaseError(err));
