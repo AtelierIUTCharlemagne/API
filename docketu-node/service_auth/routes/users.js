@@ -50,22 +50,25 @@ router.route('/')
     })
 
 /**
- * Route : /signup
- * Méthode : POST
- * Description : permet d'inscrire un utilisateur
- * params : username, email, passwd
+ * Route : /update
+ * Méthode : PATCH
+ * Description : permet d'e mettre a jour un user
+ * params : username, email, passwd, id
  * @return : JSON de l'utilisateur contenant son username et son email
  */
-router.route('/signup')
-    .patch(methodNotAllowed)
+router.route('/update')
+    .post(methodNotAllowed)
     .delete(methodNotAllowed)
     .put(methodNotAllowed)
-    .post(async (req, res, next) => {
+    .patch(async (req, res, next) => {
+
+        //TODO passer username email et passwd en optionnel si l'on veut ne changer qu'une partie du user ?
 
         const schema = Joi.object().keys({
             username: Joi.string().required(),
             email: Joi.string().email().required(),
-            passwd: Joi.string().required()
+            passwd: Joi.string().required(),
+            id : Joi.number().required(),
         })
 
         try {
@@ -74,16 +77,16 @@ router.route('/signup')
         catch (err) {
             return res.status(400).json(returnMessage.BADREQUEST);
         }
-        const { username, email, passwd } = req.body
+        const { username, email, passwd, id } = req.body
         const password = await bcrypt.hash(passwd, 10);
-        knex.from('user').insert(
+        knex.from('user').where('id_user', id).update(
             {
                 'username': username,
                 'email': email,
                 'password': password,
             }
         ).then(() => {
-            res.status(201).json({
+            return res.status(201).json({
                 "user": {
                     'username': username,
                     'email': email,
@@ -97,6 +100,56 @@ router.route('/signup')
         })
     })
     .get(methodNotAllowed)
+
+    /**
+ * Route : /signup
+ * Méthode : POST
+ * Description : permet d'inscrire un utilisateur
+ * params : username, email, passwd
+ * @return : JSON de l'utilisateur contenant son username et son email
+ */
+router.route('/signup')
+.patch(methodNotAllowed)
+.delete(methodNotAllowed)
+.put(methodNotAllowed)
+.post(async (req, res, next) => {
+
+    const schema = Joi.object().keys({
+        username: Joi.string().required(),
+        email: Joi.string().email().required(),
+        passwd: Joi.string().required()
+    })
+
+    try {
+        Joi.assert(req.body, schema);
+    }
+    catch (err) {
+        return res.status(400).json(returnMessage.BADREQUEST);
+    }
+    const { username, email, passwd } = req.body
+    const password = await bcrypt.hash(passwd, 10);
+    knex.from('user').insert(
+        {
+            'username': username,
+            'email': email,
+            'password': password,
+        }
+    ).then(() => {
+        res.status(201).json({
+            "user": {
+                'username': username,
+                'email': email,
+            }
+        })
+    }).catch((err) => {
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json(returnMessage.MAILEXISTEDEJA);
+        }
+        return res.status(500).json(returnMessage.databaseError(err));
+    })
+})
+.get(methodNotAllowed)
+
 
 /**
  * Route : /signin
